@@ -7,5 +7,7 @@ ABalancingBpCppGameMode::ABalancingBpCppGameMode()
 {
 	// set default pawn class to our character class
 	DefaultPawnClass = ABalancingBpCppPawn::StaticClass();
+
+	
 }
 

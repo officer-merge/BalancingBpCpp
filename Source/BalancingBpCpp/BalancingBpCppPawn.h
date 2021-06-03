@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "BalancingBpCppProjectile.h"
 #include "GameFramework/Character.h"
 #include "BalancingBpCppPawn.generated.h"
 
@@ -26,6 +28,16 @@ class ABalancingBpCppPawn : public APawn
 public:
 	ABalancingBpCppPawn();
 
+
+	void HandleSwitchProjectile();
+	
+	UPROPERTY(Category = "Projectile", EditAnywhere, BlueprintReadWrite )
+	TSubclassOf<class ABalancingBpCppProjectile> ProjectileFast;
+	UPROPERTY(Category = "Projectile", EditAnywhere, BlueprintReadWrite )
+	TSubclassOf<class ABalancingBpCppProjectile> ProjectileRegular;
+	UPROPERTY(Category = "Projectile", EditAnywhere, BlueprintReadWrite )
+	TSubclassOf<class ABalancingBpCppProjectile> ProjectileSlow;
+	
 	/** Offset from the ships location to spawn projectiles */
 	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite )
 	FVector GunOffset;
@@ -58,12 +70,15 @@ public:
 	static const FName MoveRightBinding;
 	static const FName FireForwardBinding;
 	static const FName FireRightBinding;
+	static const FName SwitchProjectile;
+	
 
 private:
 
 	/* Flag to control firing  */
 	uint32 bCanFire : 1;
-
+	uint32 fireMode = 1;
+	
 	/** Handle for efficient management of ShotTimerExpired timer */
 	FTimerHandle TimerHandle_ShotTimerExpired;
 

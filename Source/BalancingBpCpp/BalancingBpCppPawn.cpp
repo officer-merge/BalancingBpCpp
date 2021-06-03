@@ -17,6 +17,7 @@ const FName ABalancingBpCppPawn::MoveForwardBinding("MoveForward");
 const FName ABalancingBpCppPawn::MoveRightBinding("MoveRight");
 const FName ABalancingBpCppPawn::FireForwardBinding("FireForward");
 const FName ABalancingBpCppPawn::FireRightBinding("FireRight");
+const FName ABalancingBpCppPawn::SwitchProjectile("SwitchProjectile");
 
 ABalancingBpCppPawn::ABalancingBpCppPawn()
 {	
@@ -52,6 +53,16 @@ ABalancingBpCppPawn::ABalancingBpCppPawn()
 	bCanFire = true;
 }
 
+void ABalancingBpCppPawn::HandleSwitchProjectile()
+{
+	//switch firemode
+	fireMode = fireMode + 1;
+	if(fireMode > 3)
+	{
+		fireMode = 1;
+	}
+}
+
 void ABalancingBpCppPawn::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	check(PlayerInputComponent);
@@ -61,6 +72,8 @@ void ABalancingBpCppPawn::SetupPlayerInputComponent(class UInputComponent* Playe
 	PlayerInputComponent->BindAxis(MoveRightBinding);
 	PlayerInputComponent->BindAxis(FireForwardBinding);
 	PlayerInputComponent->BindAxis(FireRightBinding);
+	PlayerInputComponent->BindAction(SwitchProjectile, EInputEvent::IE_Released, this, &ABalancingBpCppPawn::HandleSwitchProjectile);
+	
 }
 
 void ABalancingBpCppPawn::Tick(float DeltaSeconds)
@@ -89,7 +102,8 @@ void ABalancingBpCppPawn::Tick(float DeltaSeconds)
 			RootComponent->MoveComponent(Deflection, NewRotation, true);
 		}
 	}
-	
+
+
 	// Create fire direction vector
 	const float FireForwardValue = GetInputAxisValue(FireForwardBinding);
 	const float FireRightValue = GetInputAxisValue(FireRightBinding);
@@ -115,7 +129,19 @@ void ABalancingBpCppPawn::FireShot(FVector FireDirection)
 			if (World != nullptr)
 			{
 				// spawn the projectile
-				World->SpawnActor<ABalancingBpCppProjectile>(SpawnLocation, FireRotation);
+				if(fireMode == 1)
+				{
+					World->SpawnActor<ABalancingBpCppProjectile>(ProjectileSlow->GetDefaultObject()->GetClass(), SpawnLocation, FireRotation);	
+				}
+				if(fireMode == 2)
+				{
+					World->SpawnActor<ABalancingBpCppProjectile>(ProjectileRegular->GetDefaultObject()->GetClass(), SpawnLocation, FireRotation);
+				}
+				if(fireMode == 3)
+				{
+					World->SpawnActor<ABalancingBpCppProjectile>(ProjectileFast->GetDefaultObject()->GetClass(), SpawnLocation, FireRotation);
+				}
+				
 			}
 
 			bCanFire = false;
